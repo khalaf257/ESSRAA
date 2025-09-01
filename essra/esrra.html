@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Happy 22 ♥ — For You</title>
+  <style>
+    :root{
+      --bg1:#0f0c29; /* dark gradient */
+      --bg2:#302b63;
+      --bg3:#24243e;
+      --accent1:#ff6b81; /* pink */
+      --accent2:#7c3aed; /* purple */
+      --text: #f8fafc;
+    }
+    *{box-sizing:border-box;font-family: 'Segoe UI', Tahoma, Helvetica, Arial, sans-serif}
+    html,body{height:100%;margin:0;background: linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3)); color:var(--text);overflow-x:hidden}
+
+    /* ---------- Loading overlay (moon phases) ---------- */
+    .loader-wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(2,6,23,0.95), rgba(2,6,23,0.95));z-index:9999;flex-direction:column;gap:20px}
+    .moon-scene{width:160px;height:160px;position:relative}
+    .moon{width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 30% 30%, #fff 0%, #f0f0f3 30%, #d9d9dd 60%, #bfbfc4 100%);box-shadow:0 10px 30px rgba(0,0,0,0.6);position:absolute;left:0;top:0;overflow:hidden;display:flex;align-items:center;justify-content:center}
+
+    /* mask layers to simulate phases */
+    .shade{position:absolute;left:0;top:0;width:100%;height:100%;border-radius:50%;background:linear-gradient(90deg, rgba(15,12,41,1) 40%, rgba(15,12,41,0.98) 60%);transform-origin:center center}
+    .phase-1{opacity:0}
+    .phase-2{opacity:0}
+    .phase-3{opacity:0}
+    .phase-4{opacity:0}
+
+    /* animate opacity to create sequence */
+    @keyframes phaseSequence{
+      0%{opacity:0}
+      5%{opacity:1}
+      24%{opacity:1}
+      30%{opacity:0}
+      100%{opacity:0}
+    }
+    /* staggered timings via animation-delay inline in JS */
+
+    .loader-title{font-size:18px;font-weight:700;color:var(--text)}
+    .loader-sub{font-size:13px;color:rgba(248,250,252,0.7)}
+    .progress{width:220px;height:8px;border-radius:20px;background:rgba(255,255,255,0.06);overflow:hidden}
+    .progress > i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--accent1),var(--accent2));transition:width 0.2s ease}
+
+    /* ---------- Main card ---------- */
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px;position:relative;z-index:2}
+
+    .card{
+      width:100%;max-width:960px;border-radius:20px; padding:28px; backdrop-filter: blur(12px); background: rgba(255,255,255,0.04); box-shadow: 0 15px 40px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.08);
+      display:grid;grid-template-columns: 1fr 380px;gap:20px;align-items:center;
+      transform: scale(0.95);
+      animation: popIn 1.2s ease forwards;
+    }
+    @keyframes popIn{0%{opacity:0;transform:scale(0.7) rotateX(30deg)}100%{opacity:1;transform:scale(1) rotateX(0)}}
+
+    h1{margin:0;font-size:36px;background:linear-gradient(90deg,var(--accent1),var(--accent2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation: glow 3s ease-in-out infinite alternate}
+    @keyframes glow{from{text-shadow:0 0 10px rgba(255,107,129,0.4)}to{text-shadow:0 0 20px rgba(124,58,237,0.8)}}
+
+    p.lead{margin:14px 0 22px;color:rgba(248,250,252,0.9);line-height:1.6;animation:fadeInUp 1.5s ease both}
+    @keyframes fadeInUp{0%{opacity:0;transform:translateY(20px)}100%{opacity:1;transform:translateY(0)}}
+
+    .actions{display:flex;gap:12px;margin-top:18px}
+    .btn{padding:12px 20px;border-radius:12px;border:0;font-weight:700;cursor:pointer;transition:0.3s;transform:translateY(0)}
+    .btn:hover{transform:translateY(-4px) scale(1.05);box-shadow:0 6px 20px rgba(0,0,0,0.4)}
+    .btn-spotify{background:linear-gradient(90deg,#1DB954,#1ED760);color:#07210b}
+    .btn-yt{background:linear-gradient(90deg,#ff4b4b,#ff9400);color:#161616}
+    .btn-plain{background:transparent;border:1px solid rgba(255,255,255,0.3);color:var(--text)}
+    .btn-danger {
+      background: linear-gradient(90deg,#ff4b4b,#ff9400);
+      color: #fff;
+      border: 1px solid #ff4b4b;
+      font-weight: bold;
+      box-shadow: 0 0 10px rgba(255,75,75,0.3);
+      position: relative;
+      transition: box-shadow 0.3s, background 0.3s;
+      overflow: hidden;
+    }
+    .btn-danger .emoji {
+      display: inline-block;
+      font-size: 1.3em;
+      vertical-align: middle;
+      transition: font-size 0.2s, transform 0.2s;
+    }
+    .btn-danger:hover, .btn-danger:active {
+      background: linear-gradient(90deg,#ff9400,#ff4b4b);
+      box-shadow: 0 0 30px 5px #ff4b4b, 0 0 10px #ff9400;
+      animation: shake 0.5s;
+    }
+    .btn-danger:hover .emoji, .btn-danger:active .emoji {
+      font-size: 2em;
+      transform: rotate(-10deg) scale(1.2);
+    }
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+      100% { transform: translateX(0); }
+    }
+
+    .qrcard{background:rgba(0,0,0,0.25);border-radius:16px;padding:20px;display:flex;flex-direction:column;align-items:center;gap:14px;border:1px solid rgba(255,255,255,0.15);animation:fadeIn 2s ease both}
+    @keyframes fadeIn{0%{opacity:0}100%{opacity:1}}
+
+    .qrimg{width:260px;height:260px;border-radius:12px;background:white;padding:8px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,0.6);transition:transform 0.6s}
+    .qrimg:hover{transform:rotate(6deg) scale(1.05)}
+    .qrimg img{max-width:100%;height:auto}
+
+    /* floating particles */
+    .particle{position:absolute;width:6px;height:6px;background:linear-gradient(90deg,var(--accent1),var(--accent2));border-radius:50%;opacity:0.6;animation:floatUp 12s linear infinite}
+    @keyframes floatUp{0%{transform:translateY(0) scale(0.6);opacity:0.8}100%{transform:translateY(-100vh) scale(1.2);opacity:0}}
+
+    /* نجوم متحركة في شاشة التحميل */
+    .loader-wrap .star {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.7;
+      box-shadow: 0 0 8px #fff, 0 0 2px #fff;
+      animation: starFloat 4s linear infinite;
+    }
+    @keyframes starFloat {
+      0% { opacity: 0.7; transform: translateY(0) scale(1); }
+      80% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-120px) scale(1.3); }
+    }
+
+    @media(max-width:880px){
+      .card{grid-template-columns:1fr;}
+      .qrimg{width:200px;height:200px}
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading overlay with moon phases -->
+  <div class="loader-wrap" id="loader">
+    <div class="moon-scene" aria-hidden>
+      <div class="moon" style="filter:drop-shadow(0 8px 20px rgba(124,58,237,0.18))">
+        <!-- shade layers will animate opacity to simulate phases -->
+        <div class="shade phase-1" style="transform:translateX(-10%);"></div>
+        <div class="shade phase-2" style="transform:translateX(0%);"></div>
+        <div class="shade phase-3" style="transform:translateX(10%);"></div>
+        <div class="shade phase-4" style="transform:translateX(30%);"></div>
+      </div>
+    </div>
+    <div class="loader-title">جارٍ تجهيز المفاجأة...</div>
+    <div class="loader-sub">القمر يكمل دورته عشان يطابق اكتمالك ✨</div>
+
+    <div class="progress" aria-hidden>
+      <i id="progBar"></i>
+    </div>
+    <div style="font-size:13px;color:rgba(248,250,252,0.7)" id="progText">0%</div>
+  </div>
+
+  <!-- Particles background (will be behind content) -->
+  <script>
+    for(let i=0;i<25;i++){
+      const d=document.createElement('div');
+      d.className='particle';
+      d.style.left=Math.random()*100+'%';
+      d.style.top=(50+Math.random()*50)+'%';
+      d.style.animationDuration=(8+Math.random()*8)+'s';
+      d.style.width=d.style.height=(4+Math.random()*6)+'px';
+      document.body.appendChild(d);
+    }
+
+    // نجوم متحركة في شاشة التحميل
+    const loaderWrap = document.getElementById('loader');
+    for(let i=0;i<30;i++){
+      const s = document.createElement('div');
+      s.className = 'star';
+      s.style.left = Math.random()*100 + '%';
+      s.style.top = (20+Math.random()*60) + '%';
+      s.style.animationDuration = (2+Math.random()*3) + 's';
+      s.style.opacity = 0.6 + Math.random()*0.4;
+      loaderWrap.appendChild(s);
+    }
+  </script>
+
+  <div class="wrap" id="mainContent" aria-hidden="true" style="visibility:hidden;opacity:0;transition:opacity 0.6s ease">
+    <div class="card">
+      <div class="left">
+        <h1>Happy birthday my life partner ♥</h1>
+        <p class="lead">كل تراك في البلاي ليست رسالة مني ليكي وذكرى حلوة لينا مع بعض .. شغّليها وعيشي اللحظة معايا 🎶</p>
+
+        <div class="actions">
+          <button class="btn btn-spotify" id="openSpotify">افتح Spotify</button>
+          <button class="btn btn-yt" id="openYT">افتح YouTube</button>
+          <button class="btn btn-plain btn-danger" id="copyLink"><span id="copyIcon" class="emoji">😊</span> <span id="copyText">لالا متدوسيش هنا</span></button>
+        </div>
+      </div>
+
+      <div class="qrcard">
+        <div> امسحى الكود انتى لسا هتبصيلى  😡👇</div>
+        <div class="qrimg"><img id="qrImg" src="/qr-code (2).png" alt="QR Code"/></div>
+        <button class="btn btn-plain" id="downloadPNG">حفظ الكود</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---------- Loading animation control ----------
+    const loader = document.getElementById('loader');
+    const progBar = document.getElementById('progBar');
+    const progText = document.getElementById('progText');
+    const phases = document.querySelectorAll('.shade');
+
+    // sequence durations (ms)
+    const total = 3800; // total loading time
+    const steps = phases.length;
+    const stepTime = total / (steps+1);
+
+    // animate phases by toggling opacity with delays
+    phases.forEach((el, idx)=>{
+      el.style.opacity = 0;
+      el.style.transition = 'opacity 450ms ease';
+      setTimeout(()=>{ el.style.opacity = 1; }, (idx+1)*stepTime - 200);
+      setTimeout(()=>{ el.style.opacity = 0; }, (idx+1)*stepTime + 400);
+    });
+
+    // progress bar simulation
+    let start = null;
+    function progressLoop(ts){
+      if(!start) start = ts;
+      const elapsed = ts - start;
+      const perc = Math.min(100, Math.round((elapsed/total)*100));
+      progBar.style.width = perc + '%';
+      progText.textContent = perc + '%';
+      if(elapsed < total) requestAnimationFrame(progressLoop);
+      else finishLoad();
+    }
+    requestAnimationFrame(progressLoop);
+
+    function finishLoad(){
+      // small final glow
+      loader.style.transition = 'opacity 600ms ease, visibility 0s linear 600ms';
+      loader.style.opacity = 0;
+      setTimeout(()=>{ loader.style.display = 'none';
+        const main = document.getElementById('mainContent');
+        main.style.visibility = 'visible';
+        main.style.opacity = 1; main.removeAttribute('aria-hidden');
+      },650);
+    }
+
+    // ---------- QR and actions (same as before) ----------
+    const playlistLink = "https://open.spotify.com/playlist/1RcZWstPWNvRWcLnhTbaWl?si=XryMYLmyRnutMae1KnLT4Q&pi=wdpMUrYwST6pp";
+    const qrImg = document.getElementById('qrImg');
+    qrImg.src = 'qr-code (2).png';
+
+    document.getElementById('openSpotify').onclick=()=>window.open(playlistLink,'_blank');
+    document.getElementById('openYT').onclick=()=>window.open('https://youtu.be/ABXfAMbwaJg?si=uIvJKrmBX9rBKs9n','_blank');
+    document.getElementById('copyLink').onclick=()=>{
+      window.open('فيديو واتساب بتاريخ 1447-03-10 في 01.04.10_79e7b514.mp4','_blank');
+    };
+    document.getElementById('downloadPNG').onclick=()=>{
+      const a=document.createElement('a');a.href=qrImg.src;a.download='playlist_qr.png';a.click();
+    }
+
+    // accessibility: allow escape to skip loader
+    document.addEventListener('keydown', (e)=>{if(e.key==='Escape'){finishLoad();}});
+
+    // ---------- Button icon change on hover/press ----------
+    const copyLinkBtn = document.getElementById('copyLink');
+    const copyIcon = document.getElementById('copyIcon');
+    const copyText = document.getElementById('copyText');
+    copyLinkBtn.addEventListener('mouseenter', ()=>{ 
+      copyIcon.textContent = '😡';
+      copyText.textContent = 'انا مش قولتلك مدوسيش هنا';
+    });
+    copyLinkBtn.addEventListener('mouseleave', ()=>{ 
+      copyIcon.textContent = '😊';
+      copyText.textContent = 'لالا متدوسيش هنا';
+    });
+    copyLinkBtn.addEventListener('mousedown', ()=>{ copyIcon.textContent = '😡'; });
+    copyLinkBtn.addEventListener('mouseup', ()=>{ copyIcon.textContent = '😊'; });
+  </script>
+</body>
+</html>
